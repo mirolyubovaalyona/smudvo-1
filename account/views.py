@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, \
@@ -11,6 +11,51 @@ from .forms import CreatePollForm
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core.mail import send_mail
+
+
+@permission_required('account.can_edit')
+def post_email(request):
+    # send_mail('Тестик', 'МОЁ СООБЩЕНИЕ', 'salushkin1998@bk.ru', ['kotovamasha6767@mail.ru'],
+    #           fail_silently=False)
+    if request.method == 'POST':
+        form = EmailPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            subject = form.cleaned_data['title']
+            sender = settings.EMAIL_HOST_USER
+            recipients = ['kotovamasha6767@mail.ru']
+            message = form.cleaned_data['text']
+            # if request.FILES:
+            #     uploaded_file = request.FILES['file']
+            try:
+                email = EmailMessage(subject, message, sender, recipients)
+                # email.attach(uploaded_file.name, uploaded_file.read(), uploaded_file.content_type)
+                email.send()
+                messages.success(request, 'Письмо успешно отправлено')
+                return render(request, 'account/dashboard.html')
+            except:
+                return "Ошибка"
+    else:
+        form = EmailPostForm()
+    return render(request, 'email/email.html', {'form': form})
+
+
+    # Retrieve post by id
+    # post = get_object_or_404(id=post_id, status='published')
+    # sent = False
+    # if request.method == 'POST':
+    #     # Form was submitted
+    #     form = EmailPostForm(request.POST)
+    #     if form.is_valid():
+    #         # Form fields passed validation
+    #         cd = form.cleaned_data
+    #         post_url = request.build_absolute_uri(post.get_absolute_url())
+    #         subject = '{} ({}) recommends you reading "{}"'.format(cd['name'], cd['email'], post.title)
+    #         message = 'Read "{}" at {}\n\n{}\'s comments: {}'.format(post.title, post_url, cd['name'], cd['comments'])
+    #         send_mail(subject, message, 'admin@myblog.com', [cd['to']])
+    #         # sent = True
+    # else:
+    #     form = EmailPostForm()
+    # return render(request, 'email/email.html', {'form': form})
 
 
 ############################ Голосование ###########################
@@ -241,21 +286,23 @@ def list_of_ads(request):
 ############################## Конференции ##############################
 @permission_required('account.can_add')
 def create_conference(request):
-    if request.method == "POST":
-        conference = ConferenceForm(request.POST)
-        conference.save()
-        return HttpResponseRedirect("/account")
+    if request.method == 'POST':
+        form = ConferenceForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/account')
     else:
         form = ConferenceForm()
-        return render(request, "conference/create_conference.html", {"Form": form})
+    return render(request, "conference/create_conference.html", {'form': form})
 
 
 @permission_required('account.can_edit')
 def edit_conference(request, id):
     conference = Conference.objects.get(id=id)
     if request.method == "POST":
-        conference = ConferenceForm(request.POST, instance=conference)
-        conference.save()
+        conference = ConferenceForm(request.POST, files=request.FILES, instance=conference)
+        if conference.is_valid():
+            conference.save()
         return HttpResponseRedirect("/account")
     else:
         form = ConferenceForm(instance=conference)
@@ -312,10 +359,10 @@ def delete_from_scientists(request, id):  ##удаление из совета
 
 
 ############################## Рассылка ##############################
-@permission_required('account.can_edit')
-def post_email(request):
-    send_mail('Тестик', 'МОЁ СООБЩЕНИЕ', 'salushkin1998@bk.ru', ['kotovamasha6767@mail.ru'],
-              fail_silently=False)
+# @permission_required('account.can_edit')
+# def post_email(request):
+#     send_mail('Тестик', 'МОЁ СООБЩЕНИЕ', 'salushkin1998@bk.ru', ['kotovamasha6767@mail.ru'],
+#               fail_silently=False)
     # if request.method == 'POST':
     #     form = EmailPostForm(request.POST, request.FILES)
     #     if form.is_valid():

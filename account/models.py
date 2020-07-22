@@ -69,8 +69,10 @@ class News(models.Model):
 class Conference(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField(default='')
-    date = models.CharField(max_length=100)
+    date_begin = models.CharField(max_length=100)
+    date_end = models.CharField(max_length=100)
     place = models.CharField(max_length=200)
+    photo = models.ImageField(upload_to='conference/%Y/%m-%d/', blank=True)
 
     def __unicode__(self):
         return self.title
