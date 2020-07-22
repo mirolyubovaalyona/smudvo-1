@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="conferences" class="mt-5">
+            <h2>Конференции</h2>
+            {% for c in conference %}
+                <hr>
+                <h4>{{ c.title }}</h4>
+                <p><b>Описание:</b> {{ c.text }}</p>
+                <p><b>Время:</b> {{ c.date }}</p>
+                <p><b>Место:</b> {{ c.place }}</p>
+            {% endfor %}
+</div>
+{% endblock %}
