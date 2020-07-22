@@ -1,5 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseRedirect
+from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, \
     ProfileEditForm, EmailPostForm, NewsForm, ConferenceForm, AdsForm
@@ -11,6 +11,71 @@ from .forms import CreatePollForm
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core.mail import send_mail
+from django.shortcuts import render
+from django.forms import modelformset_factory
+from django.contrib.auth.decorators import login_required
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from .forms import NewsForm, ImagesForm
+from .models import Images
+
+from django.shortcuts import render
+from django.http import HttpResponseRedirect, JsonResponse
+from django.urls import reverse_lazy
+import datetime
+from django.db.models import Q
+from django.views.generic import ListView
+from django.urls import reverse
+
+
+from .models import Post, PostImage
+
+def blog_view(request):
+    posts = Post.objects.all()
+    return render(request, 'blog.html', {'posts':posts})
+
+def detail_view(request, id):
+    post = get_object_or_404(Post, id=id)
+    photos = PostImage.objects.filter(post=post)
+    return render(request, 'detail.html', {
+        'post':post,
+        'photos':photos
+    })
+
+def list(request):
+    news_list=News.objects.all()
+    return render(request, 'news/list.html', {'news_list':news_list})
+
+def leave_img(request, news_id):
+    try:
+        news = News.objects.get(id=news_id)
+    except:
+        raise Http404("Новость не найдена")
+    news.images_set.create(image = request.FILES['image'])
+    return HttpResponseRedirect(reverse('news:detail_news', args= (news.id,)))
+
+def detail_news(request, news_id):
+    try:
+        news = News.objects.get(id=news_id)
+    except:
+        raise Http404("Новость не найдена")
+
+    if request.method == "POST":
+        form = NewsForm(data=request.POST, instance=news)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect("/account/list")
+    else:
+        form = NewsForm(instance=news)
+
+    img_list=news.images_set.all()
+    return render(request, "news/detail_news.html", {"news": news, "form": form, "img_list": img_list})
+
+
+
+
+    ############################## Новости ##############################
+
 
 
 ############################ Голосование ###########################
@@ -163,6 +228,24 @@ def edit(request):
 
 
 ############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ############################################################ Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ##############################
+############################## Новости ############################################################ Новости ############################################################ Новости ############################################################ Новости ############################################################ Новости ############################################################ Новости ##############################
+############################## Новости ##############################
+
+
 @permission_required('account.can_add')
 def create_news(request):
     if request.method == 'POST':
@@ -178,6 +261,8 @@ def create_news(request):
 @permission_required('account.can_edit')
 def edit_news(request, id):
     n = News.objects.get(id=id)
+    news = get_object_or_404(News, id=id)
+    images = Images.objects.filter(news=news)
     if request.method == "POST":
         form = NewsForm(data=request.POST, files=request.FILES, instance=n)
         if form.is_valid():
@@ -185,7 +270,8 @@ def edit_news(request, id):
             return HttpResponseRedirect("/account")
     else:
         form = NewsForm(instance=n)
-    return render(request, "news/edit_news.html", {"form": form})
+    return render(request, "news/edit_news.html", {"form": form, 'images':images})
+
 
 
 @permission_required('account.can_delete')
@@ -198,6 +284,8 @@ def delete_news(request, id):
 def list_of_news(request):
     news = News.objects.all()
     return render(request, "news/list_of_news.html", {"news": news})
+
+
 
 
 ############################## Объявления ##############################
