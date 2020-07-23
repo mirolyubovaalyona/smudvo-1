@@ -46,15 +46,57 @@ def list(request):
     news_list=News.objects.all()
     return render(request, 'news/list.html', {'news_list':news_list})
 
+@permission_required('account.can_delete')
+def delete_img(request, news_id, id):
+    img = Images.objects.get(id=id)
+    news=News.objects.get(id=news_id)
+    img.delete()
+    return HttpResponseRedirect(reverse('detail_carusel', args=(news.id,)))
+
+
+def list_of_news(request):
+    news = News.objects.all()
+    return render(request, "news/list_of_news.html", {"news": news})
+
+
+@permission_required('account.can_edit')
 def leave_img(request, news_id):
     try:
         news = News.objects.get(id=news_id)
     except:
         raise Http404("Новость не найдена")
-    news.images_set.create(image = request.FILES['image'])
-    return HttpResponseRedirect(reverse('news:detail_news', args= (news.id,)))
+    if request.method == 'POST':
+        form = ImagesForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            photo = Images(news=news, image=image)
+            photo.save()
+            img_list=news.images_set.all()
+            return render(request, "news/detail_carusel.html", {"news": news, "form": form, "img_list": img_list})
+    else:
+        form = ImagesForm()
+    return render(request, 'news/leave_img.html', {'form': form})
 
+@permission_required('account.can_edit')
 def detail_news(request, news_id):
+    try:
+        news = News.objects.get(id=news_id)
+    except:
+        raise Http404("Новость не найдена")
+
+    if request.method == "POST":
+        form = NewsForm(data=request.POST, instance=news)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect("/account/list_of_news")
+    else:
+        form = NewsForm(instance=news)
+
+    img_list=news.images_set.all()
+    return render(request, "news/detail_news.html", {"news": news, "form": form, "img_list": img_list})
+
+@permission_required('account.can_edit')
+def detail_carusel(request, news_id):
     try:
         news = News.objects.get(id=news_id)
     except:
@@ -68,8 +110,8 @@ def detail_news(request, news_id):
     else:
         form = NewsForm(instance=news)
 
-    img_list=news.images_set.all()
-    return render(request, "news/detail_news.html", {"news": news, "form": form, "img_list": img_list})
+    img_list = news.images_set.all()
+    return render(request, "news/detail_carusel.html", {"news": news, "img_list": img_list})
 
 
 

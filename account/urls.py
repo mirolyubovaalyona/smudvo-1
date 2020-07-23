@@ -9,7 +9,9 @@ urlpatterns = [
     path('<int:id>/', views.detail_view, name='detail'),
     path('list', views.list, name='news'),
     path('detail_news/<int:news_id>/', views.detail_news, name='news_datail'),
-    path('detail_news/<int:news_id>/leave_img/', views.leave_img, name='leave_img'),
+    path('detail_carusel/<int:news_id>/', views.detail_carusel, name='detail_carusel'),
+    path('leave_img/<int:news_id>/', views.leave_img, name='leave_img'),
+    path('detail_carusel/<int:news_id>/delete_img/<int:id>/', views.delete_img, name='delete_img'),
 
     path('login/', auth_views.LoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),

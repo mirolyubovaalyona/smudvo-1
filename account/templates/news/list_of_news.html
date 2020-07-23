@@ -17,7 +17,8 @@
                 {{ this_news.text }}
             </p>
             {% if request.user.is_superuser %}
-                <a class="btn btn-outline-success"  href="detail_news/{{ this_news.id }}"> Редактировать </a>
+                <a class="btn btn-outline-success"  href="detail_news/{{ this_news.id }}"> Редактировать новость</a>
+                <a class="btn btn-outline-success"  href="detail_carusel/{{ this_news.id }}"> Редактировать карусель новости</a>
                 <a class="btn btn-outline-danger" href="delete_news/{{ this_news.id }}">Удалить</a>
             {% endif %}
             <hr>

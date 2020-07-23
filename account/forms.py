@@ -100,12 +100,9 @@ class NewsFullForm(NewsForm): #extending form
         fields = NewsForm.Meta.fields + ['images',]
 
 class ImagesForm(forms.ModelForm):
-    image = forms.ImageField(label='Image')
-
     class Meta:
-        image = forms.ImageField(label='Images')
         model = Images
-        fields = ('image',)
+        fields = ['image']
 
 class AdsForm(forms.ModelForm):
     class Meta:

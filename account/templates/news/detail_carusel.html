@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport", initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Изменение карксели</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head> 
+<body>
+<div class="container py-4">
+
+    <div style="margin: 80px">
+        <h1 class="text-center">Редактирование новости</h1> <br>
+            <table class="table table-bordered">
+            <tbody>
+                {% if img_list %}
+
+                    {% for i in img_list %}
+                        <tr>
+                        <th>
+                        <img class="img-fluid rounded"  src="{{i.image.url}}">
+                            </th>
+                            <th>
+                        <a class="btn btn-outline-danger" href="delete_img/{{ i.id }}">Удалить</a>
+                        </th>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                 Изображения не найдены
+                {% endif %}
+            </tbody>
+        </table>
+
+    </div>
+    <a class="btn btn-outline-success"  href="http://127.0.0.1:8000/account/leave_img/{{ news.id }}"> добавить картинку</a>
+
+
+</div>
+</body> 
+</html> 
