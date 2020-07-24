@@ -28,10 +28,44 @@
             return false;
         });
     });
+
 </script>
     <title>Совет молодых учёных ДВО РАН</title>
     <style type="text/css">
+        .carousel {
+          height: 400px !important;
+          overflow: hidden;
+        }
+        .carousel-inner {
+          overflow: visible;
+        }
+        .carousel-inner img {
+          left: 50%;
+          max-width: none !important;
+          min-height: 400px;
+          min-width: 100%;
+          position: absolute;
+          top: 200px;
+          transform: translate(-50%,-50%);
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+          background-image: none;
+          padding-top: 300px;
+        }
 
+        .carousel-control-next-icon:after
+        {
+          content: '>';
+          font-size: 55px;
+          color: white;
+        }
+
+        .carousel-control-prev-icon:after {
+          content: '<';
+          font-size: 55px;
+          color: white;
+        }
   </style>
 </head>
 <body id="top">
