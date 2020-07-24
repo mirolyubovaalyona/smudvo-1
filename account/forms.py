@@ -92,8 +92,12 @@ class EmailPostForm(forms.Form):
 class NewsForm(forms.ModelForm):
     class Meta:
         model = News
-        fields = ['title', 'photo', 'text']
+        fields = ['title', 'text']
 
+class ImagesForm(forms.ModelForm):
+    class Meta:
+        model = Images
+        fields = ['image']
 
 class AdsForm(forms.ModelForm):
     class Meta:

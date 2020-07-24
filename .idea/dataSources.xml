@@ -15,5 +15,11 @@
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:D:\study\project\smudvo\db.sqlite3</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="db [2]" uuid="c2598d24-402a-4951-bcdc-0b776535d8d4">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:C:\Users\Daria\Documents\GitHub\smudvo\db.sqlite3</jdbc-url>
+    </data-source>
   </component>
 </project>

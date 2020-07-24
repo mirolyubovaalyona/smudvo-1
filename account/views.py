@@ -1,61 +1,16 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, \
-    ProfileEditForm, EmailPostForm, NewsForm, ConferenceForm, AdsForm
+    ProfileEditForm, EmailPostForm, NewsForm, ConferenceForm, AdsForm, ImagesForm
 from django.contrib.auth.decorators import login_required, permission_required
-from .models import Profile, News, Conference, Ads, Poll
+from .models import Profile, News, Conference, Ads, Poll, Images
 from django.contrib import messages
 from django.core.mail import EmailMessage
 from .forms import CreatePollForm
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core.mail import send_mail
-
-
-@permission_required('account.can_edit')
-def post_email(request):
-    # send_mail('Тестик', 'МОЁ СООБЩЕНИЕ', 'salushkin1998@bk.ru', ['kotovamasha6767@mail.ru'],
-    #           fail_silently=False)
-    if request.method == 'POST':
-        form = EmailPostForm(request.POST, request.FILES)
-        if form.is_valid():
-            subject = form.cleaned_data['title']
-            sender = settings.EMAIL_HOST_USER
-            recipients = ['kotovamasha6767@mail.ru']
-            message = form.cleaned_data['text']
-            # if request.FILES:
-            #     uploaded_file = request.FILES['file']
-            try:
-                email = EmailMessage(subject, message, sender, recipients)
-                # email.attach(uploaded_file.name, uploaded_file.read(), uploaded_file.content_type)
-                email.send()
-                messages.success(request, 'Письмо успешно отправлено')
-                return render(request, 'account/dashboard.html')
-            except:
-                return "Ошибка"
-    else:
-        form = EmailPostForm()
-    return render(request, 'email/email.html', {'form': form})
-
-
-    # Retrieve post by id
-    # post = get_object_or_404(id=post_id, status='published')
-    # sent = False
-    # if request.method == 'POST':
-    #     # Form was submitted
-    #     form = EmailPostForm(request.POST)
-    #     if form.is_valid():
-    #         # Form fields passed validation
-    #         cd = form.cleaned_data
-    #         post_url = request.build_absolute_uri(post.get_absolute_url())
-    #         subject = '{} ({}) recommends you reading "{}"'.format(cd['name'], cd['email'], post.title)
-    #         message = 'Read "{}" at {}\n\n{}\'s comments: {}'.format(post.title, post_url, cd['name'], cd['comments'])
-    #         send_mail(subject, message, 'admin@myblog.com', [cd['to']])
-    #         # sent = True
-    # else:
-    #     form = EmailPostForm()
-    # return render(request, 'email/email.html', {'form': form})
 
 
 ############################ Голосование ###########################
@@ -221,16 +176,22 @@ def create_news(request):
 
 
 @permission_required('account.can_edit')
-def edit_news(request, id):
-    n = News.objects.get(id=id)
+def detail_news(request, news_id):
+    try:
+        news = News.objects.get(id=news_id)
+    except:
+        raise Http404("Новость не найдена")
+
     if request.method == "POST":
-        form = NewsForm(data=request.POST, files=request.FILES, instance=n)
+        form = NewsForm(data=request.POST, instance=news)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect("/account")
+            return HttpResponseRedirect("/account/list_of_news")
     else:
-        form = NewsForm(instance=n)
-    return render(request, "news/edit_news.html", {"form": form})
+        form = NewsForm(instance=news)
+
+    img_list=news.images_set.all()
+    return render(request, "news/detail_news.html", {"news": news, "form": form, "img_list": img_list})
 
 
 @permission_required('account.can_delete')
@@ -243,6 +204,49 @@ def delete_news(request, id):
 def list_of_news(request):
     news = News.objects.all()
     return render(request, "news/list_of_news.html", {"news": news})
+
+@permission_required('account.can_edit')
+def detail_carusel(request, news_id):
+    try:
+        news = News.objects.get(id=news_id)
+    except:
+        raise Http404("Новость не найдена")
+
+    if request.method == "POST":
+        form = NewsForm(data=request.POST, instance=news)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect("/account/list")
+    else:
+        form = NewsForm(instance=news)
+
+    img_list = news.images_set.all()
+    return render(request, "news/detail_carusel.html", {"news": news, "img_list": img_list})
+
+@permission_required('account.can_edit')
+def leave_img(request, news_id):
+    try:
+        news = News.objects.get(id=news_id)
+    except:
+        raise Http404("Новость не найдена")
+    if request.method == 'POST':
+        form = ImagesForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            photo = Images(news=news, image=image)
+            photo.save()
+            img_list=news.images_set.all()
+            return render(request, "news/detail_carusel.html", {"news": news, "form": form, "img_list": img_list})
+    else:
+        form = ImagesForm()
+    return render(request, 'news/leave_img.html', {'form': form})
+
+@permission_required('account.can_delete')
+def delete_img(request, news_id, id):
+    img = Images.objects.get(id=id)
+    news=News.objects.get(id=news_id)
+    img.delete()
+    return HttpResponseRedirect(reverse('detail_carusel', args=(news.id,)))
 
 
 ############################## Объявления ##############################
@@ -286,23 +290,21 @@ def list_of_ads(request):
 ############################## Конференции ##############################
 @permission_required('account.can_add')
 def create_conference(request):
-    if request.method == 'POST':
-        form = ConferenceForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect('/account')
+    if request.method == "POST":
+        conference = ConferenceForm(request.POST)
+        conference.save()
+        return HttpResponseRedirect("/account")
     else:
         form = ConferenceForm()
-    return render(request, "conference/create_conference.html", {'form': form})
+        return render(request, "conference/create_conference.html", {"Form": form})
 
 
 @permission_required('account.can_edit')
 def edit_conference(request, id):
     conference = Conference.objects.get(id=id)
     if request.method == "POST":
-        conference = ConferenceForm(request.POST, files=request.FILES, instance=conference)
-        if conference.is_valid():
-            conference.save()
+        conference = ConferenceForm(request.POST, instance=conference)
+        conference.save()
         return HttpResponseRedirect("/account")
     else:
         form = ConferenceForm(instance=conference)
@@ -359,10 +361,10 @@ def delete_from_scientists(request, id):  ##удаление из совета
 
 
 ############################## Рассылка ##############################
-# @permission_required('account.can_edit')
-# def post_email(request):
-#     send_mail('Тестик', 'МОЁ СООБЩЕНИЕ', 'salushkin1998@bk.ru', ['kotovamasha6767@mail.ru'],
-#               fail_silently=False)
+@permission_required('account.can_edit')
+def post_email(request):
+    send_mail('Тестик', 'МОЁ СООБЩЕНИЕ', 'salushkin1998@bk.ru', ['kotovamasha6767@mail.ru'],
+              fail_silently=False)
     # if request.method == 'POST':
     #     form = EmailPostForm(request.POST, request.FILES)
     #     if form.is_valid():

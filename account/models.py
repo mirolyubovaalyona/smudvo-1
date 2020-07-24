@@ -55,7 +55,6 @@ class Ads(models.Model):
 
 class News(models.Model):
     title = models.CharField(max_length=200)
-    photo = models.ImageField(upload_to='news/%Y/%m-%d/', blank=True)
     text = models.TextField(default='')
 
     def __unicode__(self):
@@ -65,14 +64,19 @@ class News(models.Model):
         verbose_name = 'новость'
         verbose_name_plural = 'новости'
 
+class Images (models.Model):
+    news = models.ForeignKey(News, default=None, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='news/%Y/%m-%d/', null=True, blank=True)
+
+    def __str__(self):
+        return self.news.title + " Img"
+
 
 class Conference(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField(default='')
-    date_begin = models.CharField(max_length=100)
-    date_end = models.CharField(max_length=100)
+    date = models.CharField(max_length=100)
     place = models.CharField(max_length=200)
-    photo = models.ImageField(upload_to='conference/%Y/%m-%d/', blank=True)
 
     def __unicode__(self):
         return self.title
