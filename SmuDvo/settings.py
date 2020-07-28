@@ -137,3 +137,5 @@ EMAIL_HOST_USER = 'smu.dvo.ru@gmail.com'
 EMAIL_HOST_PASSWORD = 'c2707272wht[['
 EMAIL_PORT = 587
 
+ # EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR,'sent_emails')

@@ -15,7 +15,7 @@
                 <li class="list-group-item">
                     <strong>{{ poll.question }}</strong>
                     <span class="pull-right">
-                        {% if not user.is_superuser %}
+                        {% if not user.is_superuser  and  user.scientist == True %}
                                 <a style="display: block; width: 25%" href="{% url 'vote' poll.id %}" class="btn btn-info btn-xs">Проголосовать</a> &nbsp;
                             {% endif %}
                         <a href="{% url 'results' poll.id %}" class="btn btn-default btn-xs">Показать результаты</a> &nbsp;

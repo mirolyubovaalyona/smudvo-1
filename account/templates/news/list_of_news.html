@@ -1,12 +1,6 @@
-{% load staticfiles %}
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Список новостей</title>
-    <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
-</head>
-<body>
+
+{% extends "base.html" %}
+{% block content %}
     <div class="text-fluid" style="margin: 80px">
         {% for this_news in news %}
             <h2>
@@ -24,5 +18,4 @@
             <hr>
         {% endfor %}
     </div>
-</body>
-</html>
+{% endblock %}

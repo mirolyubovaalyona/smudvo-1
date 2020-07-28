@@ -1,16 +1,337 @@
-{% extends 'mainpage_base.html' %}
+<!DOCTYPE html>
+<html lang="">
+<head>
+    <meta charset="UTF-8" />
 
-{% block content %}
-    <div id="about-council">
-            <div class="pt-3">
-                <h2>О совете</h2>
-                <hr>
+    <link rel="stylesheet" href="../static/css/index.css" >
+    <link rel="stylesheet" href="../../static/css/base.css">
+    <link rel="stylesheet" type="text/css" href="../../static/css/style.css">
+    <script src="../static/js/index.js"></script>
+
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../static/css/global-styles.css">
+    <script src="../../static/js/bootstrap.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <style>
+    .fig {text-align: left;}
+    </style>
+    <style>
+    .block-container {
+                    position: relative;
+                    float: left;
+                    margin: 2px;
+    }
+    .block-container, .block-container div, .block-container img { width: 220px; height: 400px; object-fit: cover; }
+    .block-container div, .block-container img { position: absolute; }
+    .block-container img {z-index: 1000;}
+    .block-front {
+                    z-index: 1001;
+                    background-color: black;
+                    transition: all 0.4s ease-in-out 0s;
+                    opacity: 0;
+                    color: white;
+                    cursor: pointer;
+    }
+    .block-front:hover { opacity: .8; }
+    .block-front span {
+                    display: block;
+                    font-weight: bold;
+                    padding: 60px 0;
+                    text-align: center;
+    }
+    </style>
+    <script>
+    $(document).ready(function(){
+        $("a[href*=#]").on("click", function(e){
+            var anchor = $(this);
+            $('html, body').stop().animate({
+                scrollTop: $(anchor.attr('href')).offset().top - 65
+            }, 777);
+            e.preventDefault();
+            return false;
+        });
+    });
+</script>
+    <title>Совет молодых учёных ДВО РAН</title>
+</head>
+<body id="top">
+    <a href="#top" style="position: fixed;bottom: 15px;right: 20px; ">Наверх</a>
+
+    <!-- HEADER -->
+    <nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+        <a class="navbar-brand" href="http://127.0.0.1:8000/">Совет молодых ученых ДВО РАН</a>
+        <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            {% if request.user.is_authenticated %}
+                <ul class="navbar-nav ml-auto">
+                    <li {% if section == "dashboard" %} class="nav-item"{% endif %}>
+                        <form action="{% url "dashboard" %}">
+                            <button type="submit" class="button-link">Профиль</button>
+                        </form>
+                    </li>
+                    <form action="{% url "logout" %}">
+                        <button type="submit" class="button-link">Выйти</button>
+                    </form>
+                    </ul>
+            {% else %}
+                <ul class="navbar-nav ml-auto">
+                    <button type="button" class="button-link" data-toggle="modal" data-target="#exampleModalScrollable">Войти</button>
+                    <button type="button" class="button-link" data-toggle="modal" data-target="#exampleModalScrollable1">Регистрация</button>
+                </ul>
+        </div>
+        {% endif %}
+    </nav>
+
+    <!-- Modal -->
+    <div class="modal fade bd-example-modal-sm" id="exampleModalScrollable" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+               <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalScrollableTitle" style="color: blue">Вход</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+               </div>
+               <div class="modal-body">
+                   <div class="registration-form">
+                       <form action="{% url "login" %}?next={{ current_url }}" method="POST">
+                           {% csrf_token %}
+                           <p><input id="username-field" name="username" placeholder="Username" type="text" /></p>
+                           <p><input id="password-field" name="password" placeholder="Enter Password" type="password" /></p>
+                           <p><input type="submit" value="Войти"></p>
+                       </form>
+                  </div>
+              </div>
             </div>
-            <p>Совет молодых ученых Дальневосточного отделения Российской академии наук воссоздан <b>14 марта 2002 года</b>
-            с целью объединения научной молодежи, выражения ее интересов, сохранения научного потенциала и преодоления
-            негативных тенденций в возрастной структуре научных кадров.</p>
-            <p><b>Контакты: </b> smu.dvo.ru@gmail.com</p>
-            <p><b>Адреc: </b>690990, Россия, г. Владивосток, ул. Светланская, д. 50</p>
+          </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal fade bd-example-modal-sm" id="exampleModalScrollable1" tabindex="-1" role="dialog" aria-labelledby="exampleModalScrollableTitle" aria-hidden="true">
+          <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalScrollableTitle" style="color: blue">Регистрация</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                    <div class="registration-form">
+                        <p style="color: blue">Пожалуйста, зарегистрируйтесь используя следующую форму:</p>
+                        <form action="{% url "register" %}?next={{ current_url }}" method="POST">
+                            {% csrf_token %}
+                            <p><input id="username" name="username" placeholder="Username"type="text" /></p>
+                            <p><input id="first_name" name="first_name" placeholder="First Name"type="text" /></p>
+                            <p><input id="last_name" name="last_name" placeholder="Last Name"type="text" /></p>
+                            <p><input id="email" name="email" placeholder="Email"type="text" /></p>
+                            <p><input id="password" name="password" placeholder="Enter Password"type="password" /></p>
+                            <p><input id="password2" name="password2" placeholder="Repeat Password"type="password" /></p>
+                            <p><input type="submit" value="Войти"></p>
+                        </form>
+                    </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    <!-- JUST ONE SLIDE-->
+    <div style="padding-top: 1px" id="carouselExampleSlidesOnly" class="carousel slide" data-ride="carousel" >
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <img class="d-block w-100" src="../../media/banner1.png" alt=" "> <!-- Задать путь до баннера-->
+            </div>
+        </div>
     </div>
 
-{% endblock %}
+    <div class="container mt-3">
+        <div class="row text-center">
+            <div class="col-sm-12 col-md">
+                <a href="#about-council" class="some_link;  text-dark " style="font-size: large">О совете</a>
+            </div>
+            <div class="col-sm-12 col-md">
+                <a href="#scientists-list" class="text-dark" style="font-size: large">Состав совета</a>
+            </div>
+            <div class="col-sm-12 col-md">
+                <a href="#news" class="text-dark" style="font-size: large">Новости</a>
+            </div>
+            <div class="col-sm-12 col-md">
+                <a href="#ads" class="text-dark" style="font-size: large">Объявления</a>
+            </div>
+            <div class="col-sm-12 col-md">
+                <a href="#conferences" class="text-dark" style="font-size: large">Конференции</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Новости-->
+    <div class='container-fluid'>
+        <div id="news" class="mt-5">
+            <div class="col-md-12 list-post">
+                <div class="row">
+                    {% for new in news %}
+                        <div class="col-md-2 col-xs-12 col-sm-6">
+                            <div class="img-post">
+                                <!--Carousel Wrapper-->
+                                <div id="Carousel{{ forloop.counter }}" class="carousel slide " data-ride="carousel">
+
+                                <!--Slides-->
+                                <div class="carousel-inner" >
+                                  {% for p in new.images_set.all %}
+                                  <div class="carousel-item {% if forloop.counter0 == 0 %} active {% endif %}">
+                                    <img  class="img-fluid rounded" src="{{p.image.url}}"
+                                      alt="First slide">
+                                  </div>
+                                  {% endfor %}
+                                  <!--/First slide-->
+                                <!--/.Slides-->
+                                </div>
+                                </div>
+
+                            </div>
+                            <div class="desc-post"><a href="{% url "newsPage" new.id %}" style="color: #1b1e21">{{ new.title }}</a></div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br> <br> <br>
+
+    <!-- О совете -->
+    <div class='container-fluid padding'>
+    <div class='container-fluid padding'>
+    <div class='container-fluid padding'>
+        <div class="row">
+            <div class="col-md-7">
+                <div class='row jumbotron' id="about-council">
+                    <div class='col-sm-12'>
+                        <p class='lead'> Совет молодых ученых Дальневосточного отделения Российской академии наук воссоздан <b>14 марта 2002 года</b>
+                        с целью объединения научной молодежи, выражения ее интересов, сохранения научного потенциала и преодоления
+                        негативных тенденций в возрастной структуре научных кадров.</p>
+                        <a href='#'><button type='button' class='btn btn-outline-secondary btn-lg'> Читать </button></a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5">
+            <!-- Опрос-->
+                {% if request.user.is_authenticated %}
+                    <div class="container-fluid" id="polls">
+                    {% for poll in polls %}
+                        <div class="col-md-11 col-xs-9 col-sm-4">
+                            <li class="list-group-item">
+                                <strong>{{ poll.title }}</strong>
+                                <span style="display: block; justify-content: flex-end" class="pull-right">
+                                    {% if not user.is_superuser %}
+                                        <br>
+                                        <a style="display: block" href="{% url 'vote' poll.id %}" class="btn btn-info btn-xs">Проголосовать</a> &nbsp;
+                                    {% endif %}
+                                    {% if user.is_superuser %}
+                                        <a href="{% url 'results' poll.id %}" class="btn btn-outline-primary">Показать результаты</a> &nbsp;
+                                        <a href="{% url 'delete' poll.id %}" class="btn btn-default btn-xs">Удалить опрос</a>
+                                    {% endif %}
+                                </span>
+                            </li>
+                        </div>
+                        <br>
+                    {% endfor %}
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    </div>
+
+<hr>
+    <!-- Состав совета -->
+    <div class='container-fluid' id="scientists-list">
+            <div class='row'>
+                <div class='col-xl-9'>
+                    <br>
+                   <img src='https://i.mycdn.me/i?r=AzEPZsRbOZEKgBhR0XGMT1RkRuHsfcJ9K9a6x-RA1V3LPKaKTM5SRkZCeTgDn6uOyic' class='img-fluid'>
+                </div>
+                <div class='col-xl-3'>
+                <a href="{% url "page_scientists" %}"><img src='../../media/butt.png' class='img-fluid'></a>
+                </div>
+            </div>
+        </div>
+
+    <br> <br> <br>
+     <!-- Конференции -->
+    <div class='container-fluid padding'>
+        <div class="container-fluid padding"  id="conferences" class="mt-5">
+            <div class='row padding'>
+                <div class='col-lg-3' style="border-width: 0 1px 0 0;border-style: solid; padding-right: 10px; border-color: #6c757d">
+                    <center><h2>Конференции</h2></center>
+                </div>
+                <div class='col-lg-9'>
+                    <div class="row">
+                        {% for c in conference %}
+                            <div class="col-md-3 col-xs-12 col-sm-6">
+                                <hr>
+                                <h4>{{ c.title }}</h4>
+                                <div class="block-container">
+                                    {% if c.photo %}
+                                        <img  class="img-fluid rounded float-left" src="{{c.photo.url }}" alt="Изображение было удалено с сервера.">
+                                    {% else %}
+                                        <img  class="img-fluid rounded float-left" src="../../media/no_photo.png" alt="Изображение было удалено с сервера.">
+                                    {% endif %}
+                                    <div class="block-front"><span>
+                                        <p><b>Описание:</b> {{ c.text }}</p>
+                                        <p><b>Время начала:</b> {{ c.date_begin }}</p>
+                                        <p><b>Время конца:</b> {{ c.date_end }}</p>
+                                        <p><b>Место:</b> {{ c.place }}</p>
+                                    </span></div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br> <br> <br>
+    <div class='container-fluid padding'>
+        <div class="container-fluid padding"  id="conferences" class="mt-5">
+            <div class='row padding'>
+                <div class='col-lg-9' style="border-width: 0 1px 0 0;border-style: solid; padding-right: 10px; border-color: #6c757d" id="ads">
+                    <!-- Объявления -->
+                    {% for this_ads in ads %}
+                        <div class="text-center">
+                            <hr style="height: 1px;  background-color: #0056b3">
+                            <h6 class="text-justify">{{ this_ads.title }}</h6>
+                            <br>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class='col-lg-3'>
+                    <center><h2>Объявления</h2></center>
+                </div>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+    <hr>
+
+    <br> <br> <br>
+
+    <div class="container-fluid" style="background-color: #2c51aa">
+       <br>
+                <p style="color: white">© Тык тык тык тык тык тык.<br>
+                    NIP: 894-304-10-92<br>
+                    Jestem zbyt leniwy, by wymyślać mądre rzeczy</p>
+    </div>
+
+</body>
+</html>

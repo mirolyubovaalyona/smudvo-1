@@ -1,15 +1,33 @@
-
 from django import forms
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from .models import *
 
+
 # Голосование
-class CreatePollForm(ModelForm):
+class CreatePollsForm(forms.ModelForm):
     class Meta:
-        model = Poll
-        fields = ['question', 'option_one', 'option_two', 'option_three']
-# Голосование
+        model = Polls
+        fields = ['title', 'option_one', 'option_two', 'option_three']
+
+
+class CreatePollsQuest(forms.ModelForm):
+    class Meta:
+        model = Polls_questions
+        fields = ['polls_id', 'count', 'question']
+
+
+class CreatePollsComment(forms.ModelForm):
+    class Meta:
+        model = Polls_comment
+        fields = ['polls_id', 'user_id', 'content']
+
+
+class CreatePollsSecret(forms.ModelForm):
+    class Meta:
+        model = Polls_secret
+        fields = ['polls_id', 'user_id']
+        # Голосование
 
 
 class LoginForm(forms.Form):
@@ -78,7 +96,8 @@ class UserEditForm(forms.ModelForm):
 class ProfileEditForm(forms.ModelForm):
     class Meta:
         model = Profile
-        fields = ('date_of_birth', 'photo', 'organization', 'position', 'bio')
+        fields = ('date_of_birth', 'photo', 'organization', 'position', 'bio', 'scopus', 'wos', 'e_library',
+                  'instagram', 'facebook', 'vk', 'google_scholar')
 
 
 class EmailPostForm(forms.Form):
@@ -88,21 +107,22 @@ class EmailPostForm(forms.Form):
     file = forms.FileField()
 
 
+class EmailMasForm(forms.Form):
+    title = forms.CharField(max_length=50)
+    text = forms.CharField(widget=forms.Textarea)
+    file = forms.FileField()
+
+
 class NewsForm(forms.ModelForm):
     class Meta:
         model = News
         fields = ['title', 'text']
 
-class NewsFullForm(NewsForm): #extending form
-    images = forms.FileField(widget=forms.ClearableFileInput(attrs={'multiple': True}))
-
-    class Meta(NewsForm.Meta):
-        fields = NewsForm.Meta.fields + ['images',]
-
 class ImagesForm(forms.ModelForm):
     class Meta:
         model = Images
         fields = ['image']
+
 
 class AdsForm(forms.ModelForm):
     class Meta:
@@ -114,3 +134,9 @@ class ConferenceForm(forms.ModelForm):
     class Meta:
         model = Conference
         fields = "__all__"
+
+
+class SubscribeForm(forms.ModelForm):
+    class Meta:
+        model = User_mas
+        fields = ('email',)

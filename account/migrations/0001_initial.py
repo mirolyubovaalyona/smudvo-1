@@ -20,8 +20,10 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=200)),
                 ('text', models.TextField(default='')),
-                ('date', models.CharField(max_length=100)),
+                ('date_begin', models.CharField(max_length=100)),
+                ('date_end', models.CharField(max_length=100)),
                 ('place', models.CharField(max_length=200)),
+                ('photo', models.ImageField(blank=True, upload_to='conference/%Y/%m-%d/')),
             ],
         ),
         migrations.CreateModel(

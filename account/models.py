@@ -2,23 +2,42 @@ from django.db import models
 from django.conf import settings
 
 
-# class Add_to:
-#     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-
-
 # голосование
-class Poll(models.Model):
-    question = models.TextField()
-    option_one = models.CharField(max_length=30)
-    option_two = models.CharField(max_length=30)
-    option_three = models.CharField(max_length=30)
+class Polls(models.Model):
+    title = models.TextField()
+    option_one = models.CharField(max_length=30, default='')
+    option_two = models.CharField(max_length=30, default='')
+    option_three = models.CharField(max_length=30, default='')
     option_one_count = models.IntegerField(default=0)
     option_two_count = models.IntegerField(default=0)
     option_three_count = models.IntegerField(default=0)
 
-    def total(self):
-        return self.option_one_count + self.option_two_count + self.option_three_count
+    # def total(self):
+        # return self.option_one_count + self.option_two_count + self.option_three_count
+        # return
 # голосование
+
+
+class Polls_questions(models.Model):
+    question = models.CharField(max_length=200, default='')
+    polls_id = models.IntegerField()
+    count = models.IntegerField(default=0)
+
+
+class Polls_secret(models.Model):
+    polls_id = models.IntegerField()
+    user_id = models.IntegerField()
+
+
+class Polls_comment(models.Model):
+    polls_id = models.IntegerField()
+    user_id = models.IntegerField()
+    content = models.TextField(default='')
+
+
+class User_mas(models.Model):
+    name = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    email = models.CharField(max_length=100, default='')
 
 
 class Profile(models.Model):
@@ -31,6 +50,14 @@ class Profile(models.Model):
     scientist = models.NullBooleanField(default=False)
     user_is_reject = models.NullBooleanField(default=False)
     user_submit = models.NullBooleanField(default=False)
+
+    scopus = models.CharField(max_length=100, default='')
+    wos = models.CharField(max_length=100, default='')
+    e_library = models.CharField(max_length=100, default='')
+    instagram = models.CharField(max_length=100, default='')
+    facebook = models.CharField(max_length=100, default='')
+    vk = models.CharField(max_length=100, default='')
+    google_scholar = models.CharField(max_length=100, default='')
 
     def __unicode__(self):
         return self.user
@@ -69,26 +96,14 @@ class Images (models.Model):
     def __str__(self):
         return self.news.title + " Img"
 
-class Post(models.Model):
-    title = models.CharField(max_length=250)
-    description = models.TextField()
-    image = models.FileField(blank=True)
-
-    def __str__(self):
-        return self.title
-
-class PostImage(models.Model):
-    post = models.ForeignKey(Post, default=None, on_delete=models.CASCADE)
-    images = models.FileField(upload_to = 'images/')
-
-    def __str__(self):
-        return self.post.title
 
 class Conference(models.Model):
     title = models.CharField(max_length=200)
     text = models.TextField(default='')
-    date = models.CharField(max_length=100)
+    date_begin = models.CharField(max_length=100)
+    date_end = models.CharField(max_length=100)
     place = models.CharField(max_length=200)
+    photo = models.ImageField(upload_to='conference/%Y/%m-%d/', blank=True)
 
     def __unicode__(self):
         return self.title
