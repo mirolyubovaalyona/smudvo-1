@@ -5,16 +5,16 @@ from .models import *
 
 
 # Голосование
-class CreatePollsForm(forms.ModelForm):
+class PollsForm(forms.ModelForm):
     class Meta:
         model = Polls
-        fields = ['title', 'option_one', 'option_two', 'option_three']
+        fields = ['title']
 
 
-class CreatePollsQuest(forms.ModelForm):
+class PollsQuest(forms.ModelForm):
     class Meta:
         model = Polls_questions
-        fields = ['polls_id', 'count', 'question']
+        fields = ['question']
 
 
 class CreatePollsComment(forms.ModelForm):
@@ -23,10 +23,10 @@ class CreatePollsComment(forms.ModelForm):
         fields = ['polls_id', 'user_id', 'content']
 
 
-class CreatePollsSecret(forms.ModelForm):
+class PollsSecret(forms.ModelForm):
     class Meta:
         model = Polls_secret
-        fields = ['polls_id', 'user_id']
+        fields = ['user_id']
         # Голосование
 
 

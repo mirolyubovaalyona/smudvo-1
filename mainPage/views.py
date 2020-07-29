@@ -8,10 +8,10 @@ def index(request):
     news = News.objects.all()
     users = Profile.objects.all()
     ads = Ads.objects.all()
-    poll = Polls.objects.all()
+    polls = Polls.objects.all()
     poll_comment = Polls_comment.objects.all()
     poll_questions = Polls_questions.objects.all()
-    return render(request, "index.html", {"users": users, "news": news, "conference": conference, "ads": ads, "polls": poll, "comment": poll_comment, "questions": poll_questions})
+    return render(request, "index.html", {"users": users, "news": news, "conference": conference, "ads": ads, "polls": polls, "comment": poll_comment, "questions": poll_questions})
 
 def newsPage(request, news_id):
     try:

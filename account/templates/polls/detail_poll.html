@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport", initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Изменение опроса</title>
+    <link rel="stylesheet" href="../../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+</head>
+<body>
+<div class="container py-4">
+
+    <div style="margin: 80px">
+        <h1 class="text-center">Редактирование опроса</h1> <br>
+
+             <form method = "post" enctype="multipart/form-data">
+                {% csrf_token %}
+                 <table class="table table-bordered">
+                    {{ form }}
+                <button type="submit" class="btn btn-success float-left">Изменить опрос</button><br>
+                     </table>
+             </form>
+
+            <table class="table table-bordered">
+                {% if ans_list %}
+
+
+                {% else %}
+                 Варианты не не найдены
+                {% endif %}
+                {% if request.user.is_superuser %}
+                    <a class="btn btn-outline-success"  href="http://127.0.0.1:8000/account/detail_ans/{{ poll.id }}"> Редактировать вариантв ответа опроса </a>
+                {% endif %}
+            </table>
+
+    </div>
+</div>
+</body>
+</html>

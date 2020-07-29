@@ -5,12 +5,6 @@ from django.conf import settings
 # голосование
 class Polls(models.Model):
     title = models.TextField()
-    option_one = models.CharField(max_length=30, default='')
-    option_two = models.CharField(max_length=30, default='')
-    option_three = models.CharField(max_length=30, default='')
-    option_one_count = models.IntegerField(default=0)
-    option_two_count = models.IntegerField(default=0)
-    option_three_count = models.IntegerField(default=0)
 
     # def total(self):
         # return self.option_one_count + self.option_two_count + self.option_three_count
@@ -19,13 +13,13 @@ class Polls(models.Model):
 
 
 class Polls_questions(models.Model):
-    question = models.CharField(max_length=200, default='')
-    polls_id = models.IntegerField()
+    poll = models.ForeignKey(Polls, default=None, on_delete=models.CASCADE)
+    question = models.TextField(max_length=200, default='')
     count = models.IntegerField(default=0)
 
 
 class Polls_secret(models.Model):
-    polls_id = models.IntegerField()
+    poll = models.ForeignKey(Polls, default=None, on_delete=models.CASCADE)
     user_id = models.IntegerField()
 
 

@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.contrib.auth import authenticate, login
 from .forms import LoginForm, UserRegistrationForm, UserEditForm, \
     ProfileEditForm, EmailPostForm, NewsForm, ConferenceForm, AdsForm, SubscribeForm, EmailMasForm, ImagesForm
@@ -7,13 +7,109 @@ from django.contrib.auth.decorators import login_required, permission_required
 from .models import Profile, News, Conference, Ads, Polls, Polls_comment, Polls_questions, Polls_secret, User_mas, Images
 from django.contrib import messages
 from django.core.mail import EmailMessage
-from .forms import CreatePollsForm
+from .forms import PollsForm
 from .forms import CreatePollsComment
-from .forms import CreatePollsQuest
-from .forms import CreatePollsSecret
+from .forms import PollsQuest
+from .forms import PollsSecret
 from django.shortcuts import redirect
 from django.conf import settings
 from django.core.mail import send_mail
+from django.urls import reverse
+
+
+############################ Голосование ###########################
+@permission_required('account.can_add')
+def create_poll(request):
+    if request.method == 'POST':
+        form = PollsForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect('/account/list_of_poll')
+    else:
+        form = NewsForm()
+    return render(request, 'polls/create_poll.html', {'form': form})
+
+
+
+
+@permission_required('account.can_edit')
+def detail_poll(request, poll_id):
+    try:
+        poll = Polls.objects.get(id=poll_id)
+    except:
+        raise Http404("Оппрос не найден")
+
+    if request.method == "POST":
+        form = PollsForm(data=request.POST, instance=poll)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect("/account/list_of_poll")
+    else:
+        form = PollsForm(instance=poll)
+
+    ans_list=poll.polls_questions_set.all()
+    return render(request, "polls/detail_poll.html", {"poll": poll, "form": form, "ans_list": ans_list})
+
+
+@permission_required('account.can_delete')
+def delete_poll(request, id):
+    poll = Polls.objects.get(id=id)
+    poll.delete()
+    return HttpResponseRedirect("/account/list_of_poll")
+
+
+def list_of_poll(request):
+    polls = Polls.objects.all()
+    return render(request, "polls/list_of_poll.html", {"polls": polls})
+
+
+
+
+
+@permission_required('account.can_edit')
+def detail_ans(request, poll_id):
+    try:
+        poll = Polls.objects.get(id=poll_id)
+    except:
+        raise Http404("опрос не найден")
+
+    if request.method == 'POST':
+        form = PollsQuest(request.POST, request.FILES)
+        if form.is_valid():
+            question = form.cleaned_data['question']
+            polls = Polls_questions(poll=poll, question = question, count = 0)
+            polls.save()
+            ans_list=poll.polls_questions_set.all()
+            return render(request, "polls/detail_ans.html", {"poll": poll, "form": form, "ans_list": ans_list})
+    else:
+        form = PollsQuest()
+        ans_list = poll.polls_questions_set.all()
+    return render(request, "polls/detail_ans.html", {"poll": poll, "form": form, "ans_list": ans_list})
+
+@permission_required('account.can_edit')
+def leave_ans(request, poll_id):
+    try:
+        poll = Polls.objects.get(id=poll_id)
+    except:
+        raise Http404("Опрос не найдена")
+    if request.method == 'POST':
+        form = ImagesForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = form.cleaned_data['image']
+            photo = Images(poll=poll, qu=image)
+            photo.save()
+            ans_list=poll.polls_questions_set.all()
+            return render(request, "polls/detail_ans.html.html", {"poll": poll, "ans_list": ans_list})
+    else:
+        form = PollsQuest()
+    return render(request, 'polls/leave_ans.html', {'form': form})
+
+@permission_required('account.can_delete')
+def delete_ans(request, poll_id, id):
+    ans = Polls_questions.objects.get(id=id)
+    poll=Polls.objects.get(id=poll_id)
+    ans.delete()
+    return HttpResponseRedirect(reverse('detail_ans', args=(poll.id,)))
 
 
 ############################ рассылка ###########################
@@ -277,23 +373,6 @@ def detail_carusel(request, news_id):
     except:
         raise Http404("Новость не найдена")
 
-    if request.method == "POST":
-        form = NewsForm(data=request.POST, instance=news)
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect("/account/list")
-    else:
-        form = NewsForm(instance=news)
-
-    img_list = news.images_set.all()
-    return render(request, "news/detail_carusel.html", {"news": news, "img_list": img_list})
-
-@permission_required('account.can_edit')
-def leave_img(request, news_id):
-    try:
-        news = News.objects.get(id=news_id)
-    except:
-        raise Http404("Новость не найдена")
     if request.method == 'POST':
         form = ImagesForm(request.POST, request.FILES)
         if form.is_valid():
@@ -304,7 +383,9 @@ def leave_img(request, news_id):
             return render(request, "news/detail_carusel.html", {"news": news, "form": form, "img_list": img_list})
     else:
         form = ImagesForm()
-    return render(request, 'news/leave_img.html', {'form': form})
+        img_list = news.images_set.all()
+    return render(request, "news/detail_carusel.html", {"news": news, "form": form, "img_list": img_list})
+
 
 @permission_required('account.can_delete')
 def delete_img(request, news_id, id):

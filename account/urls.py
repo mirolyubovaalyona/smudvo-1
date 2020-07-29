@@ -27,8 +27,15 @@ urlpatterns = [
     path('delete_news/<int:id>/', views.delete_news),
     path('detail_news/<int:news_id>/', views.detail_news, name='news_datail'),
     path('detail_carusel/<int:news_id>/', views.detail_carusel, name='detail_carusel'),
-    path('leave_img/<int:news_id>/', views.leave_img, name='leave_img'),
     path('detail_carusel/<int:news_id>/delete_img/<int:id>/', views.delete_img, name='delete_img'),
+
+# голосование1
+    path('list_of_poll', views.list_of_poll, name='list_of_poll'),
+    path('create_poll', views.create_poll, name='create_poll'),
+    path('delete_poll/<int:id>/', views.delete_poll),
+    path('detail_poll/<int:poll_id>/', views.detail_poll, name='news_poll'),
+    path('detail_ans/<int:poll_id>/', views.detail_ans, name='detail_ans'),
+    path('detail_ans/<int:poll_id>/delete_ans/<int:id>/', views.delete_ans, name='delete_ans'),
 
 # голосование
     path('vote/', views.home, name='home'),

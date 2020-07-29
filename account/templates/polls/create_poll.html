@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block content %}
+    <div style="margin: 80px">
+        <h1 class="text-center">Создание опроса</h1> <br>
+        <form id="post_form" method = "post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <table class="table table-bordered">
+            <tbody>
+                {{ form }}
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success float-left">Загрузить опрос</button>
+    </form>
+    </div>
+{% endblock %}

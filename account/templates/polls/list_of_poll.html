@@ -1,0 +1,19 @@
+
+{% extends "base.html" %}
+{% block content %}
+    <div class="text-fluid" style="margin: 80px">
+        {% for poll in polls %}
+            <h2>
+                {{ poll.title }}
+            </h2>
+            <br>
+            {% if request.user.is_superuser %}
+                <a class="btn btn-outline-success"  href="detail_poll/{{ poll.id }}"> Редактировать опрос</a>
+                <a class="btn btn-outline-success"  href="detail_ans/{{ poll.id }}"> Редактировать варианты ответа</a>
+                <a class="btn btn-outline-danger" href="delete_poll/{{ poll.id }}">Удалить</a>
+            {% endif %}
+            <hr>
+        {% endfor %}
+    </div>
+    <a class="btn btn-outline-success" href="create_poll">Создать опрос</a>
+{% endblock %}
